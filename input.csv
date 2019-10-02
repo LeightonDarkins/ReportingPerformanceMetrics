@@ -1,0 +1,2 @@
+site,report_name,template_name,hits,total_time,avg_time
+testSite,testName,testTemplate,1,0.5,0.999
