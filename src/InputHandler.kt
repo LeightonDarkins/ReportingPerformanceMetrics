@@ -1,8 +1,10 @@
 import java.io.BufferedReader
 import java.io.FileReader
 
-class InputHandler() {
+class InputHandler {
     var fileReader: FileReader? = null
+
+    private val FILENAME = "metrics.csv"
 
     private val SITE_NAME_INDEX = 0
     private val REPORT_NAME_INDEX = 1
@@ -17,7 +19,7 @@ class InputHandler() {
         try {
             var line: String?
 
-            fileReader = FileReader("input.csv")
+            fileReader = FileReader(FILENAME)
 
             var bufferedReader = BufferedReader(fileReader)
 
@@ -44,7 +46,6 @@ class InputHandler() {
                 line = bufferedReader.readLine()
             }
         } catch (e: Exception) {
-            println("Error Reading File!")
             e.printStackTrace()
         }
 

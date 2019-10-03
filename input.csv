@@ -1,2 +1,12 @@
 site,report_name,template_name,hits,total_time,avg_time
 testSite,testName,testTemplate,1,0.5,0.999
+testSite,testName,testTemplate,1,0.5,0.999
+testSite2,testName,testTemplate,1,0.5,0.999
+testSite2,testName,testTemplate,1,0.5,0.999
+testSite2,testName,testTemplate,1,0.5,0.999
+testSite3,testName,testTemplate,1,0.5,0.999
+testSite3,testName,testTemplate,1,0.5,0.999
+testSite3,testName,testTemplate,1,0.5,0.999
+testSite4,testName,testTemplate,1,0.5,0.999
+testSite5,testName,testTemplate,1,0.5,0.999
+testSite5,testName,testTemplate,1,0.5,0.999
