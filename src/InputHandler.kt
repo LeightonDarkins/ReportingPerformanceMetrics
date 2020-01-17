@@ -2,9 +2,7 @@ import java.io.BufferedReader
 import java.io.FileReader
 
 class InputHandler {
-    var fileReader: FileReader? = null
-
-    private val FILENAME = "metrics.csv"
+    private var fileReader: FileReader? = null
 
     private val SITE_NAME_INDEX = 0
     private val REPORT_NAME_INDEX = 1
@@ -13,13 +11,14 @@ class InputHandler {
     private val TOTAL_TIME_INDEX = 4
     private val AVERAGE_TIME_INDEX = 5
 
-    fun read(): ArrayList<PerformanceMetricLine> {
+    fun read(file: String): ArrayList<PerformanceMetricLine> {
         val performanceMetricLines = ArrayList<PerformanceMetricLine>()
+        val fileName = "resources/$file.csv"
 
         try {
             var line: String?
 
-            fileReader = FileReader(FILENAME)
+            fileReader = FileReader(fileName)
 
             var bufferedReader = BufferedReader(fileReader)
 
@@ -45,6 +44,8 @@ class InputHandler {
 
                 line = bufferedReader.readLine()
             }
+
+            bufferedReader.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -3,47 +3,95 @@ import java.math.RoundingMode
 
 val AVERAGE_MONTH_LENGTH = BigDecimal(30)
 val AVERAGE_DAY_LENGTH = BigDecimal(10)
-val NUMBER_OF_CLINICS = BigDecimal(3000)
+val QUEUE_TIME = BigDecimal(5)
 val SIXTY = BigDecimal(60)
 
 fun main() {
-    val inputHandler = InputHandler()
-    val performanceMetricLines = inputHandler.read()
+    val fileNames = listOf(
+        "january-2018",
+        "february-2018",
+        "march-2018",
+        "april-2018",
+        "may-2018",
+        "june-2018",
+        "july-2018",
+        "august-2018",
+        "september-2018",
+        "october-2018",
+        "november-2018",
+        "december-2018",
+        "january-2019",
+        "february-2019",
+        "march-2019",
+        "april-2019",
+        "may-2019",
+        "june-2019",
+        "july-2019",
+        "august-2019",
+        "september-2019",
+        "october-2019",
+        "december-2019")
 
-    val grouped = performanceMetricLines.groupBy { it.siteName }
+    val results = ArrayList<Line>()
+    val completionTimes = ArrayList<Line>()
 
-    val aggregateMetricLines = grouped.map { (key, value) ->
-        val hits = value.sumBy { line -> line.hits }
-        val time = value.sumByDouble { line -> line.averageTime }
+    for (fileName in fileNames) {
+        val inputHandler = InputHandler()
+        val performanceMetricLines = inputHandler.read(fileName)
+        val size = performanceMetricLines.size
 
-        AggregateMetricLine(key, hits, time)
+        val grouped = performanceMetricLines.groupBy { it.siteName }
+
+        var totalHits = 0
+
+        val aggregateMetricLines = grouped.map { (key, value) ->
+            val hits = value.sumBy { line -> line.hits }
+            totalHits += hits
+
+            val time = value.sumByDouble { line -> line.averageTime }
+
+            AggregateMetricLine(key, hits, time)
+        }
+
+        val averageHitsPerMonth = aggregateMetricLines.map { it.hits }.average().toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
+
+        val averageTime = aggregateMetricLines.map { it.averageTime }.average().toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
+
+        val completionTimeLine = CompletionTimeLine(fileName, performanceMetricLines)
+
+//        completionTimeLine.printHeaders()
+//        completionTimeLine.printPercentages()
+////
+//        println()
+
+        completionTimes.add(completionTimeLine)
+
+        results.add(
+            MonthlyMetricLine(
+                fileName,
+                aggregateMetricLines.size.toBigDecimal(),
+                totalHits,
+                averageHitsPerMonth,
+                averageTime)
+        )
     }
 
-    println("--- Hits ---")
+    println()
 
-    val averageHitsPerMonth = aggregateMetricLines.map { it.hits }.average().toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
+    results.forEach { it.printRequirements() }
 
-    println("$averageHitsPerMonth- Report Hits Per Month, Per Site")
+    println()
+//
+//    for ((index, result) in results.withIndex()) {
+//        if (index == 0) result.printHeaders()
+//
+//        result.print()
+//    }
+//
+    val outputHandler = OutputHandler()
 
-    val averageHitsPerDayPerClinic = averageHitsPerMonth / AVERAGE_MONTH_LENGTH
-    val averageHitsPerDay = averageHitsPerDayPerClinic * NUMBER_OF_CLINICS
-    val averageHitsPerHour = averageHitsPerDay / AVERAGE_DAY_LENGTH
-
-    println("$averageHitsPerDayPerClinic Average Hits Per Month, Per Clinic")
-    println("$averageHitsPerDay - Average Hits Per Per Month, Overall")
-    println("$averageHitsPerHour - Average Hits Per Hour, Per Work Day, Overall")
-
-    println("--- Runtime ---")
-
-    val averageTime = aggregateMetricLines.map { it.averageTime }.average().toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)
-
-    val possibleToCompleteInOneHour = (SIXTY * SIXTY) / averageTime
-    val servicesNeededToCompleteAllHitsInOneHour = averageHitsPerHour / possibleToCompleteInOneHour
-
-    println("$averageTime - Average Report Run Time")
-    println("$possibleToCompleteInOneHour - Reports Completed By One Service In One Hour")
-
-    println("--- Services ---")
-
-    println("$servicesNeededToCompleteAllHitsInOneHour - Number Of Services Needed")
+    outputHandler.write("results", results)
+    outputHandler.write("completionTimes", completionTimes)
 }
+
+fun toPercentage(value: Double, setSize: Int) = BigDecimal((value / setSize) * 100).setScale(4, RoundingMode.HALF_EVEN)
